@@ -24,6 +24,11 @@ module.exports = function (req, res, next) {
     req.user = decoded.user;
     console.log('User object:', req.user);
 
+    // Check if user is an admin
+    if (req.user.type !== 'Admin') {
+      return res.status(403).json({ msg: 'User is not authorized' });
+    }
+
     next();
   } catch (err) {
     console.error(err);
