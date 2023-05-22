@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 
 // Register a new user
 exports.registerUser = async (req, res) => {
@@ -18,7 +19,7 @@ exports.registerUser = async (req, res) => {
     user = new User({
       username,
       email,
-      password,  // no longer hashed here
+      password,
       type,
     });
 
@@ -91,10 +92,6 @@ exports.loginUser = async (req, res) => {
 // Get a user's profile
 exports.getUserProfile = async (req, res) => {
   try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ msg: 'Invalid user information' });
-    }
-
     const user = await User.findById(req.user.id).select('-password');
 
     if (!user) {

@@ -18,6 +18,7 @@ module.exports = function (req, res, next) {
     console.log('Decoded token:', decoded);
 
     if (!decoded.user || !decoded.user.id) {
+      console.log('Invalid user information in token');
       return res.status(401).json({ msg: 'Invalid user information in token' });
     }
 
@@ -26,8 +27,12 @@ module.exports = function (req, res, next) {
 
     // Check if user is an admin
     if (req.user.type !== 'Admin') {
+      console.log('User is not authorized');
       return res.status(403).json({ msg: 'User is not authorized' });
     }
+
+    console.log('Username:', req.user.username);
+    console.log('User Type:', req.user.type);
 
     next();
   } catch (err) {
