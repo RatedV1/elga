@@ -56,6 +56,9 @@ app.use('/api/coaching-services', coachingServiceRoutes);
 const gameRoutes = require('./routes/gameRoutes');
 app.use('/api/games', gameRoutes);
 
+const coachRoutes = require('./routes/coachRoutes');
+app.use('/api/coaches', coachRoutes);
+
 app.get('/', (req, res) => {
   res.send('Hello, EGA!');
 });
