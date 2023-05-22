@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const CoachSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -13,11 +12,6 @@ const CoachSchema = new mongoose.Schema({
   expertise: {
     type: String,
     required: [true, 'Please provide the coach\'s area of expertise'],
-  },
-  coachingService: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'CoachingService',
-    required: [true, 'Please provide the coach\'s coaching service'],
   },
   bio: {
     type: String,
@@ -53,6 +47,10 @@ const CoachSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  services: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Service'
+  }],
 });
 
 const Coach = mongoose.model('Coach', CoachSchema);

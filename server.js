@@ -19,7 +19,6 @@ function connectDB() {
     .then(() => {
       console.log('Connected to MongoDB');
 
-      // Further code related to your database connection
       app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
       });
@@ -29,7 +28,6 @@ function connectDB() {
       process.exit(1);
     });
 
-  // Close the MongoDB connection when the Node.js process is terminated
   process.on('SIGINT', () => {
     mongoose.connection.close(() => {
       console.log('MongoDB connection closed');
@@ -50,14 +48,18 @@ app.use((req, res, next) => {
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/users', userRoutes);
 
-const coachingServiceRoutes = require('./routes/coachingServiceRoutes.js');
-app.use('/api/coaching-services', coachingServiceRoutes);
+const coachRoutes = require('./routes/coachRoutes');
+app.use('/api/coaches', coachRoutes);
+
+const serviceRoutes = require('./routes/serviceRoutes');
+app.use('/api/services', serviceRoutes);
 
 const gameRoutes = require('./routes/gameRoutes');
 app.use('/api/games', gameRoutes);
 
-const coachRoutes = require('./routes/coachRoutes');
-app.use('/api/coaches', coachRoutes);
+const orderRoutes = require('./routes/orderRoutes');
+app.use('/orders', orderRoutes);
+
 
 app.get('/', (req, res) => {
   res.send('Hello, EGA!');

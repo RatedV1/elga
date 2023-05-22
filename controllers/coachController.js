@@ -1,7 +1,7 @@
 const Coach = require('../models/Coach');
 const { validationResult } = require('express-validator');
 const asyncHandler = require('../middlewares/asyncHandler');
-
+const Service = require('../models/Service');
 // Get all coaches
 exports.getAllCoaches = asyncHandler(async (req, res) => {
   const coaches = await Coach.find();
@@ -25,7 +25,7 @@ exports.createCoach = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
       }
   
-      const { name, expertise, coachingService, bio, profilePicture, filters, socialMedia, faqs, username } = req.body;
+      const { name, expertise, Service, bio, profilePicture, filters, socialMedia, faqs, username } = req.body;
   
       console.log('Creating coach...');
       console.log('User ID:', req.user.id);
@@ -35,7 +35,7 @@ exports.createCoach = asyncHandler(async (req, res) => {
       const coach = new Coach({
         name,
         expertise,
-        coachingService,
+        Service,
         bio,
         profilePicture,
         filters,
