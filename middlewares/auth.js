@@ -4,7 +4,7 @@ module.exports = function (req, res, next) {
   // Get token from header
   const authHeader = req.header('Authorization');
 
-  // Check if not token
+  // Check if no token
   if (!authHeader) {
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }
@@ -26,10 +26,10 @@ module.exports = function (req, res, next) {
     console.log('User object:', req.user);
 
     // Check if user is an admin
-    if (req.user.type !== 'Admin') {
-      console.log('User is not authorized');
-      return res.status(403).json({ msg: 'User is not authorized' });
-    }
+   // if (req.user.type !== 'Admin') {
+   //   console.log('User is not authorized');
+     // return res.status(403).json({ msg: 'User is not authorized' });
+    //}
 
     console.log('Username:', req.user.username);
     console.log('User Type:', req.user.type);

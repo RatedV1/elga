@@ -32,6 +32,12 @@ router.put(
     body('name').notEmpty().withMessage('Name is required'),
     body('expertise').notEmpty().withMessage('Expertise is required'),
     // Add more validation rules as needed
+    body('gameId').if(body('gameId').exists()).custom((value, { req }) => {
+      if (req.user.type !== 'Admin') {
+        throw new Error('Not authorized to update gameId');
+      }
+      return true;
+    }),
   ],
   coachController.updateCoach
 );

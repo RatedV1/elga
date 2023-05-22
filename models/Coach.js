@@ -49,6 +49,10 @@ const CoachSchema = new mongoose.Schema({
     required: [true, 'Please provide a username for the coach\'s URL'],
     unique: true,
   },
+  gameId: {
+    type: String,
+    required: false,
+  },
 });
 
 const Coach = mongoose.model('Coach', CoachSchema);

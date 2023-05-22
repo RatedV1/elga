@@ -29,6 +29,8 @@ exports.createCoach = asyncHandler(async (req, res) => {
   
       console.log('Creating coach...');
       console.log('User ID:', req.user.id);
+      console.log('User Type:', req.user.type);
+      console.log('User Name:', req.user.username);
   
       const coach = new Coach({
         name,
@@ -53,6 +55,8 @@ exports.createCoach = asyncHandler(async (req, res) => {
       res.status(500).json({ msg: 'Server error' });
     }
   });
+  
+  
   
 
 // Update coach info
@@ -86,6 +90,10 @@ console.log('Comparison result:', req.user.id !== coach.user.toString());
   coach.socialMedia = socialMedia;
   coach.faqs = faqs;
   coach.username = username;
+  // Only allow admins to update the gameId field
+    if (req.user.type === 'Admin') {
+        coach.gameId = gameId;
+    }
 
   await coach.save();
 
