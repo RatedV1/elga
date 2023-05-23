@@ -68,7 +68,22 @@ exports.createReview = asyncHandler(async (req, res) => {
     data: review,
   });
 });
+  // Calculate average rating
+  const coachReviews = await Review.find({ coach });
+  const totalRatings = coachReviews.reduce((sum, review) => sum + review.rating, 0);
+  const averageRating = coachReviews.length > 0 ? totalRatings / coachReviews.length : 5;
 
+  // Update coach's averageRating
+  const updatedCoach = await Coach.findByIdAndUpdate(
+    coach,
+    { averageRating },
+    { new: true }
+  );
+
+  res.status(201).json({
+    success: true,
+    data: review,
+  });
 exports.getReviewsByCoachId = asyncHandler(async (req, res, next) => {
   const coachId = req.params.coachId;
   const reviews = await Review.find({ coach: coachId });

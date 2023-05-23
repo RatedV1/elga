@@ -23,7 +23,8 @@ router.post(
   ],
   coachController.createCoach
 );
-
+// Get average rating for a specific coach
+router.get('/:coachId/average-rating', coachController.getCoachAverageRating);
 // Get coach level
 router.get('/:id/level', coachController.getCoachLevel);
 // Update coach info

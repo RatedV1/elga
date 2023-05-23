@@ -84,7 +84,17 @@ exports.createCoach = asyncHandler(async (req, res) => {
   });
   
   
+  exports.getCoachAverageRating = asyncHandler(async (req, res) => {
+    const { coachId } = req.params;
   
+    const coach = await Coach.findById(coachId);
+    if (!coach) {
+      return res.status(404).json({ msg: 'Coach not found' });
+    }
+  
+    res.json({ averageRating: coach.averageRating });
+  });
+   
 // Get coach ID by email
 exports.getCoachIdByEmail = asyncHandler(async (req, res) => {
   const email = req.params.email;
