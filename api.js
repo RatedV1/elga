@@ -23,6 +23,9 @@ export function getCoachIdByEmail(email) {
 export function getCoachLevel(coachId) {
   return axios.get(`/api/coaches/${coachId}/level`);
 }
+export function getCoachAverageRating(coachId) {
+  return axios.get(`/api/coaches/${coachId}/average-rating`);
+}
 // Game APIs
 export function createGame(gameData) {
   return axios.post('/api/games', gameData);
