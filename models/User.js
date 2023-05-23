@@ -56,5 +56,9 @@ UserSchema.methods.matchPasswords = async function (password) {
 };
 
 const User = mongoose.model('User', UserSchema);
+reviews: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Review',
+}],
 
 module.exports = User;

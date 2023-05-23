@@ -1,18 +1,15 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Import the User model
+const User = require('../models/User');
 
 module.exports = async function (req, res, next) {
-  // Get token from header
   const authHeader = req.header('Authorization');
 
-  // Check if no token
   if (!authHeader) {
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }
 
-  const token = authHeader.split(' ')[1]; // split "Bearer" from "Bearer {token}"
+  const token = authHeader.split(' ')[1];
 
-  // Verify token
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 

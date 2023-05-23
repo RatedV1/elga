@@ -24,6 +24,8 @@ router.post(
   coachController.createCoach
 );
 
+// Get coach level
+router.get('/:id/level', coachController.getCoachLevel);
 // Update coach info
 router.put(
   '/:id',

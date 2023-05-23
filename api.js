@@ -1,10 +1,5 @@
 import axios from 'axios';
 
-// Affiliate APIs
-export function getAffiliateDashboard() {
-  return axios.get('/api/affiliate/dashboard');
-}
-
 // Coach APIs
 export function getAllCoaches() {
   return axios.get('/api/coaches');
@@ -25,7 +20,9 @@ export function updateCoach(coachId, coachData) {
 export function getCoachIdByEmail(email) {
   return axios.get(`/api/coaches/email/${email}`);
 }
-
+export function getCoachLevel(coachId) {
+  return axios.get(`/api/coaches/${coachId}/level`);
+}
 // Game APIs
 export function createGame(gameData) {
   return axios.post('/api/games', gameData);
@@ -129,4 +126,21 @@ export function generateAffiliateLink() {
 
 export function getAffiliateDashboard() {
   return axios.get('/api/users/affiliate/dashboard');
+}
+
+// Review APIs
+export function createReview(reviewData) {
+  return axios.post('/api/reviews', reviewData);
+}
+export function getReviews() {
+  return axios.get('/api/reviews');
+}
+export function getReviewById(reviewId) {
+  return axios.get(`/api/reviews/${reviewId}`);
+}
+export function updateReview(reviewId, reviewData) {
+  return axios.put(`/api/reviews/${reviewId}`, reviewData);
+}
+export function getReviewsByCoachId(coachId) {
+  return axios.get(`/api/reviews/coach/${coachId}`);
 }

@@ -25,6 +25,10 @@ const CoachSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide the URL of the coach\'s profile picture'],
   },
+  coverPic: {
+    type: String,
+    required: [true, 'Please provide the URL of the coach\'s cover picture'],
+  },
   filters: {
     type: [String],
     required: [true, 'Please provide the coach\'s filters'],
@@ -34,6 +38,7 @@ const CoachSchema = new mongoose.Schema({
       twitter: String,
       instagram: String,
       facebook: String,
+      discord: String,
     },
   },
   faqs: [
@@ -52,6 +57,15 @@ const CoachSchema = new mongoose.Schema({
     required: [true, 'Please provide the coach\'s email'],
     unique: true,
   },
+  averageRating: {
+    type: Number,
+    default: 5,
+  },
+  level: {
+    type: String,
+    required: [true, 'Please provide the coach level'],
+  },
+  
   gameId: {
     type: String,
     required: false,

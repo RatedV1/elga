@@ -40,11 +40,9 @@ const GameSchema = new mongoose.Schema({
     required: [true, 'Please provide a friendly URL for the game'],
     unique: true,
   },
-  filters: [GameFilterSchema],
   gameType: {
     type: String,
-    enum: ['MOBA', 'FPS'],  // Add more as needed
-    required: [true, 'Please provide a game type'],
+    required: [true, 'Please provide a gameType'],
   },
   numberOfCoaches: {
     type: Number,
@@ -54,7 +52,10 @@ const GameSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a game cover image URL'],
   },
-  filters: [GameFilterSchema],
+  gameBanner: {
+    type: String,
+    required: [true, 'Please provide a game banner image URL'],
+  },
   featuredStarImg: {
     type: String,
     required: [true, 'Please provide a featured star image URL'],
@@ -65,10 +66,17 @@ const GameSchema = new mongoose.Schema({
   },
 });
 
-GameSchema.pre('save', async function(next) {
-  this.numberOfCoaches = await Coach.countDocuments({ game: this._id });
-  next();
+GameSchema.pre('save', async function (next) {
+  try {
+    const coachCount = await Coach.countDocuments({ game: this._id });
+    this.numberOfCoaches = coachCount;
+    return next();
+  } catch (error) {
+    return next(error);
+  }
 });
+
+
 
 const Game = mongoose.model('Game', GameSchema);
 
