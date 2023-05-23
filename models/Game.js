@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Coach = require('./Coach');
 
 const GameFilterSchema = new mongoose.Schema({
   filterName: {
@@ -8,6 +9,11 @@ const GameFilterSchema = new mongoose.Schema({
   filterOptions: {
     type: [String], 
     required: [true, 'Please provide options for the filter'],
+  },
+  filterType: {
+    type: String,
+    enum: ['multiSelect', 'dropdown', 'rangeSlider'],
+    required: [true, 'Please provide type for the filter'],
   },
 });
 
@@ -35,6 +41,33 @@ const GameSchema = new mongoose.Schema({
     unique: true,
   },
   filters: [GameFilterSchema],
+  gameType: {
+    type: String,
+    enum: ['MOBA', 'FPS'],  // Add more as needed
+    required: [true, 'Please provide a game type'],
+  },
+  numberOfCoaches: {
+    type: Number,
+    default: 0,
+  },
+  gameCover: {
+    type: String,
+    required: [true, 'Please provide a game cover image URL'],
+  },
+  filters: [GameFilterSchema],
+  featuredStarImg: {
+    type: String,
+    required: [true, 'Please provide a featured star image URL'],
+  },
+  featuredStarQuote: {
+    type: String,
+    required: [true, 'Please provide a featured star quote'],
+  },
+});
+
+GameSchema.pre('save', async function(next) {
+  this.numberOfCoaches = await Coach.countDocuments({ game: this._id });
+  next();
 });
 
 const Game = mongoose.model('Game', GameSchema);

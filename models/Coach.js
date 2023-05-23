@@ -17,6 +17,10 @@ const CoachSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a bio for the coach'],
   },
+  game: {
+    type: String,
+    required: [true, 'Please provide a Game for the coach']
+  },
   profilePicture: {
     type: String,
     required: [true, 'Please provide the URL of the coach\'s profile picture'],

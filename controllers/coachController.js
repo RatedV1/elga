@@ -2,6 +2,8 @@ const Coach = require('../models/Coach');
 const { validationResult } = require('express-validator');
 const asyncHandler = require('../middlewares/asyncHandler');
 const Service = require('../models/Service');
+const User = require('../models/User'); // assuming this is your User model
+
 // Get all coaches
 exports.getAllCoaches = asyncHandler(async (req, res) => {
   const coaches = await Coach.find();
@@ -16,35 +18,58 @@ exports.getCoachById = asyncHandler(async (req, res) => {
   }
   res.json(coach);
 });
-
-// Create a new coach
+  
 exports.createCoach = asyncHandler(async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, expertise, email, service, bio, profilePicture, filters, socialMedia, faqs, username,game } = req.body;
+
+    console.log('Creating coach...');
+    console.log('Name:', name);
+    console.log('Expertise:', expertise);
+    console.log('Email:', email);
+    console.log('Service:', Service);
+    console.log('Bio:', bio);
+    console.log('Profile Picture:', profilePicture);
+    console.log('Filters:', filters);
+    console.log('Social Media:', socialMedia);
+    console.log('FAQs:', faqs);
+    console.log('Username:', username);
   
-      const { name, expertise, Service, bio, profilePicture, filters, socialMedia, faqs, username } = req.body;
-  
-      console.log('Creating coach...');
-      console.log('User ID:', req.user.id);
-      console.log('User Type:', req.user.type);
-      console.log('User Name:', req.user.username);
-  
-      const coach = new Coach({
-        name,
-        expertise,
-        Service,
-        bio,
-        profilePicture,
-        filters,
-        socialMedia,
-        faqs,
-        username,
-        user: req.user.id,
-      });
-  
+    const coach = new Coach({
+      name,
+      expertise,
+      service, // Changed from 'Service' to 'service'
+      bio,
+      profilePicture,
+      filters,
+      socialMedia,
+      faqs,
+      username,
+      email,
+      game, // the game id
+      user: req.user.id,
+    });
+    // Find the user document and update the user type to Coach
+    const user = await User.findById(req.user.id);
+    if (user) {
+      user.type = 'Coach';  // or whatever string you use to signify a coach
+      await user.save();
+    } else {
+      console.error(`User not found with id ${req.user.id}`);
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    await user.save();
+    if (user.type !== 'Coach') {
+      console.error(`Failed to update user type for id ${req.user.id}`);
+      return res.status(500).json({ msg: 'Failed to update user type' });
+    }
+    
+    await coach.save();
       await coach.save();
   
       console.log('Coach created:', coach);
@@ -80,7 +105,7 @@ exports.updateCoach = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, expertise, bio, profilePicture, filters, socialMedia, faqs, username } = req.body;
+  const { name, expertise, bio, profilePicture, filters, socialMedia, faqs, username,game } = req.body;
 
   let coach = await Coach.findById(req.params.id);
   if (!coach) {
@@ -104,6 +129,7 @@ console.log('Comparison result:', req.user.id !== coach.user.toString());
   coach.socialMedia = socialMedia;
   coach.faqs = faqs;
   coach.username = username;
+  coach.game = game; // the game id
   // Only allow admins to update the gameId field
     if (req.user.type === 'Admin') {
         coach.gameId = gameId;
