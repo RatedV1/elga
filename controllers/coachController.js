@@ -58,6 +58,20 @@ exports.createCoach = asyncHandler(async (req, res) => {
   
   
   
+// Get coach ID by email
+exports.getCoachIdByEmail = asyncHandler(async (req, res) => {
+  const email = req.params.email;
+  console.log('Requested email:', email);
+
+  const coach = await Coach.findOne({ email });
+  console.log('Retrieved coach:', coach);
+
+  if (!coach) {
+    return res.status(404).json({ msg: 'Coach not found' });
+  }
+
+  res.json({ coachId: coach._id });
+});
 
 // Update coach info
 exports.updateCoach = asyncHandler(async (req, res) => {

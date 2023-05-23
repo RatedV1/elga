@@ -4,35 +4,39 @@ const serviceController = require('../controllers/serviceController');
 const auth = require('../middlewares/auth');
 const asyncHandler = require('../middlewares/asyncHandler');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true }); // Enable access to params from parent routes
 
 // Create a new service for a coach
 router.post(
-  '/:id/service',
+  '/',
   [
     auth,
     body('title').notEmpty().withMessage('Title is required'),
     body('description').notEmpty().withMessage('Description is required'),
-    body('duration').notEmpty().withMessage('Duration is required'),
-    body('price').notEmpty().withMessage('Price is required'),
+    body('duration').isNumeric().withMessage('Duration must be a number'),
+    body('price').isNumeric().withMessage('Price must be a number'),
   ],
-  serviceController.createService
+  asyncHandler(serviceController.createService)
 );
 
 // Update a service for a coach
 router.put(
-  '/:id/service/:serviceId',
+  '/:serviceId',
   [
     auth,
-    body('title').notEmpty().withMessage('Title is required'),
-    body('description').notEmpty().withMessage('Description is required'),
-    body('duration').notEmpty().withMessage('Duration is required'),
-    body('price').notEmpty().withMessage('Price is required'),
+    body('title').notEmpty().optional().withMessage('Title is required'),
+    body('description').notEmpty().optional().withMessage('Description is required'),
+    body('duration').isNumeric().optional().withMessage('Duration must be a number'),
+    body('price').isNumeric().optional().withMessage('Price must be a number'),
   ],
-  serviceController.updateService
+  asyncHandler(serviceController.updateService)
 );
-
+// Get a service for a coach
+router.get('/:serviceId', auth, asyncHandler((req, res) => {
+  req.body.coachId = req.params.coachId; // add this line
+  serviceController.getService(req, res);
+}));
 // Delete a service for a coach
-router.delete('/:id/service/:serviceId', auth, serviceController.deleteService);
+router.delete('/:serviceId', auth, asyncHandler(serviceController.deleteService));
 
 module.exports = router;

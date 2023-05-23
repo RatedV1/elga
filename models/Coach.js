@@ -43,6 +43,11 @@ const CoachSchema = new mongoose.Schema({
     required: [true, 'Please provide a username for the coach\'s URL'],
     unique: true,
   },
+  email: {
+    type: String,
+    required: [true, 'Please provide the coach\'s email'],
+    unique: true,
+  },
   gameId: {
     type: String,
     required: false,

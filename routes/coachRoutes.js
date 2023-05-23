@@ -41,5 +41,7 @@ router.put(
   ],
   coachController.updateCoach
 );
+// Get coach ID by email
+router.get('/email/:email', auth, coachController.getCoachIdByEmail);
 
 module.exports = router;

@@ -29,6 +29,12 @@ const UserSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  discordId: {
+    type: String,
+    unique: true
+  },
+  username: String,
+  email: String
 });
 
 UserSchema.pre('save', async function (next) {

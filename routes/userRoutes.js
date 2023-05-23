@@ -4,6 +4,8 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const auth = require('../middlewares/auth');
 const asyncHandler = require('../middlewares/asyncHandler');
+const passport = require('passport');
+const DiscordStrategy = require('passport-discord').Strategy;
 
 // Register a new user
 router.post(
@@ -28,7 +30,16 @@ router.post(
   ],
   asyncHandler(userController.loginUser)
 );
+// Redirect the user to the Discord authentication page
+router.get('/auth/discord', passport.authenticate('discord'));
 
+// The callback route that Discord will redirect to after the user accepts/rejects
+router.get('/auth/discord/callback', 
+    passport.authenticate('discord', { failureRedirect: '/login' }),
+    function(req, res) {
+        res.redirect('/');  // or wherever you want
+    }
+);
 // Get user profile
 router.get('/profile', auth, asyncHandler(userController.getUserProfile));
 

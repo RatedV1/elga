@@ -1,36 +1,63 @@
 const asyncHandler = require('../middlewares/asyncHandler');
 const Order = require('../models/Order');
+const Service = require('../models/Service'); // Add this line to import the Service model
+
 
 // Function to calculate the commission
-function calculateCommission(order) {
-  if (!order.service || !order.service.price) {
+async function calculateCommission(order) {
+  const populatedOrder = await Order.findById(order._id).populate('service').exec();
+
+  if (!populatedOrder.service || !populatedOrder.service.price) {
     throw new Error('Invalid order structure. Missing service or price property.');
   }
 
   const commissionPercentage = 10;
-  const commission = order.service.price * (commissionPercentage / 100);
+  const commission = populatedOrder.service.price * (commissionPercentage / 100);
   return commission;
 }
 
+
+
+
 // POST /orders
 exports.createOrder = asyncHandler(async (req, res, next) => {
-  const order = new Order(req.body);
+  const { service: serviceId, customer: customerId, coach: coachId } = req.body;
+
   try {
-    order.commission = calculateCommission(order);
+    const service = await Service.findById(serviceId).select('price');
+
+    if (!service) {
+      return res.status(400).json({
+        success: false,
+        error: 'Service not found'
+      });
+    }
+
+    const commissionPercentage = 10;
+    const commission = service.price * (commissionPercentage / 100);
+
+    const order = new Order({
+      service: serviceId,
+      customer: customerId,
+      coach: coachId,
+      commission: commission,
+      price: service.price
+    });
+
+    await order.save();
+
+    res.status(201).json({
+      success: true,
+      data: order
+    });
   } catch (error) {
     return res.status(400).json({
       success: false,
       error: error.message
     });
   }
-
-  await order.save();
-
-  res.status(201).json({
-    success: true,
-    data: order
-  });
 });
+
 
 
 // GET /orders
