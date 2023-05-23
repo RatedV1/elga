@@ -3,6 +3,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
+const generateAffiliateCode = () => {
+  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 10; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters.charAt(randomIndex);
+  }
+  return code;
+};
+
 // Register a new user
 exports.registerUser = async (req, res) => {
   const { username, email, password, type } = req.body;
@@ -15,12 +25,16 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
+    // Generate affiliate code
+    const affiliateCode = generateAffiliateCode();
+
     // Create a new user
     user = new User({
       username,
       email,
       password,
       type,
+      affiliateCode
     });
 
     // Save the user to the database

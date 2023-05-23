@@ -32,6 +32,9 @@ const OrderSchema = new mongoose.Schema({
   commission: {
     type: Number,
     required: true
+  },
+  affiliateCode: {
+    type: String // Add the affiliateCode field
   }
 });
 

@@ -29,6 +29,10 @@ const UserSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  affiliateCode: {
+    type: String,
+    unique: true
+  },
   discordId: {
     type: String,
     unique: true

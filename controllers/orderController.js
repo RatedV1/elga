@@ -1,7 +1,9 @@
-const asyncHandler = require('../middlewares/asyncHandler');
+const { validationResult } = require('express-validator');
 const Order = require('../models/Order');
-const Service = require('../models/Service'); // Add this line to import the Service model
-
+const Service = require('../models/Service');
+const User = require('../models/User');
+const Message = require('../models/Message');
+const asyncHandler = require('../middlewares/asyncHandler');
 
 // Function to calculate the commission
 async function calculateCommission(order) {
@@ -16,11 +18,8 @@ async function calculateCommission(order) {
   return commission;
 }
 
-
-
-
 // POST /orders
-exports.createOrder = asyncHandler(async (req, res, next) => {
+exports.createOrder = asyncHandler(async (req, res) => {
   const { service: serviceId, customer: customerId, coach: coachId } = req.body;
 
   try {
@@ -29,76 +28,88 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     if (!service) {
       return res.status(400).json({
         success: false,
-        error: 'Service not found'
+        error: 'Service not found',
       });
     }
 
+    // Calculate commission
     const commissionPercentage = 10;
     const commission = service.price * (commissionPercentage / 100);
 
-    const order = new Order({
-      service: serviceId,
-      customer: customerId,
-      coach: coachId,
-      commission: commission,
-      price: service.price
-    });
+    // Create the order
+  const order = new Order({
+  service: serviceId,
+  customer: customerId,
+  coach: coachId,
+  commission: commission,
+  price: service.price,
+  affiliateCode: req.header('X-Affiliate-Code'),
+});
 
-    await order.save();
+await order.save();
+
+// Create a new chat between the coach and the customer
+const message = new Message({
+  content: 'New chat created',
+  sender: coachId,
+  receiver: customerId,
+  orderId: order._id,
+});
+
+await message.save();
+
 
     res.status(201).json({
       success: true,
-      data: order
+      data: order,
     });
   } catch (error) {
-    return res.status(400).json({
+    res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Failed to create order',
     });
   }
 });
 
-
-
 // GET /orders
-exports.getOrders = asyncHandler(async (req, res, next) => {
+exports.getOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find();
 
   res.status(200).json({
     success: true,
-    data: orders
+    data: orders,
   });
 });
 
 // GET /orders/:id
-exports.getOrder = asyncHandler(async (req, res, next) => {
+exports.getOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
 
   res.status(200).json({
     success: true,
-    data: order
+    data: order,
   });
 });
 
 // PUT /orders/:id
-exports.updateOrder = asyncHandler(async (req, res, next) => {
+exports.updateOrder = asyncHandler(async (req, res) => {
   const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
 
   res.status(200).json({
     success: true,
-    data: order
+    data: order,
   });
 });
 
 // DELETE /orders/:id
-exports.deleteOrder = asyncHandler(async (req, res, next) => {
+exports.deleteOrder = asyncHandler(async (req, res) => {
   await Order.findByIdAndDelete(req.params.id);
 
   res.status(200).json({
     success: true,
-    data: {}
+    data: {},
   });
 });

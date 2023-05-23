@@ -58,4 +58,10 @@ router.put(
 // Delete a user
 router.delete('/user', auth, asyncHandler(userController.deleteUser));
 
+// Generate Affiliate Link
+router.get('/affiliate/link', auth, asyncHandler(userController.generateAffiliateLink));
+
+// Affiliate Dashboard
+router.get('/affiliate/dashboard', auth, asyncHandler(userController.getAffiliateDashboard));
+
 module.exports = router;

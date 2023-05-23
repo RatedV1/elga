@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User'); // Import the User model
 
-module.exports = function (req, res, next) {
+module.exports = async function (req, res, next) {
   // Get token from header
   const authHeader = req.header('Authorization');
 
@@ -22,14 +23,23 @@ module.exports = function (req, res, next) {
       return res.status(401).json({ msg: 'Invalid user information in token' });
     }
 
-    req.user = decoded.user;
+    // Retrieve the user from the database
+    const user = await User.findById(decoded.user.id);
+
+    if (!user) {
+      console.log('User not found');
+      return res.status(401).json({ msg: 'User not found' });
+    }
+
+    req.user = user; // Assign the user object to the request
+
     console.log('User object:', req.user);
 
     // Check if user is an admin
-   // if (req.user.type !== 'Admin') {
-   //   console.log('User is not authorized');
-     // return res.status(403).json({ msg: 'User is not authorized' });
-    //}
+    // if (req.user.type !== 'Admin') {
+    //   console.log('User is not authorized');
+    //   return res.status(403).json({ msg: 'User is not authorized' });
+    // }
 
     console.log('Username:', req.user.username);
     console.log('User Type:', req.user.type);

@@ -8,9 +8,23 @@ const passport = require('passport');
 const DiscordStrategy = require('passport-discord').Strategy;
 const User = require('./models/User');
 const crypto = require('crypto');
-
+const auth = require('./middlewares/auth');
+const asyncHandler = require('./middlewares/asyncHandler');
+const http = require('http');
+const socketIO = require('socket.io');
+const { Server } = require('socket.io');
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Create the HTTP server
+const server = http.createServer(app);
+
+// Create the WebSocket server
+const io = new Server(server);
+
+// Import messageController and set io
+const messageController = require('./controllers/messageController');
+messageController.setIo(io); // This is the new line
 
 function connectDB() {
   console.log('Connecting to MongoDB...');
@@ -24,7 +38,7 @@ function connectDB() {
     .then(() => {
       console.log('Connected to MongoDB');
 
-      app.listen(port, () => {
+      server.listen(port, () => {
         console.log(`Server is running on port ${port}`);
       });
     })
@@ -41,52 +55,90 @@ function connectDB() {
   });
 }
 
-passport.use(new DiscordStrategy({
-    clientID: process.env.DISCORD_CLIENT_ID,
-    clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: process.env.DISCORD_CALLBACK_URL,
-    scope: ['identify', 'email']
-},
-function(accessToken, refreshToken, profile, done) {
-    User.findOne({ discordId: profile.id })
-        .then((existingUser) => {
-            if (existingUser) {
-                return done(null, existingUser);
-            } else {
-                const tempPassword = crypto.randomBytes(15).toString('hex');
-                const newUser = new User({
-                    discordId: profile.id,
-                    username: profile.username,
-                    email: profile.email,
-                    password: tempPassword
-                });
+// Handle socket.io events
+io.on('connection', (socket) => {
+  console.log('A user connected');
 
-                newUser.save()
-                    .then((user) => {
-                        // Send tempPassword to user via email.
-                        return done(null, user);
-                    })
-                    .catch((err) => {
-                        return done(new Error("Failed to save new user: " + err.message));
-                    });
-            }
+  socket.on('joinRoom', ({ orderId }) => {
+    socket.join(orderId);
+  });
+
+  // Handle new message event
+  socket.on('sendMessage', messageController.sendMessage);
+
+  // Handle errors
+  socket.on('connect_failed', function() {
+    console.error("Sorry, there seems to be an issue with the connection!");
+  });
+
+  socket.on('error', function(err) {
+    console.error("Socket.IO Error:", err);
+  });
+
+  socket.on('reconnect_failed', function() {
+    console.error("Reconnection to the server failed!");
+  });
+
+  // Handle disconnect event
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
+
+passport.use(
+  new DiscordStrategy(
+    {
+      clientID: process.env.DISCORD_CLIENT_ID,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      callbackURL: process.env.DISCORD_CALLBACK_URL,
+      scope: ['identify', 'email'],
+    },
+    function (accessToken, refreshToken, profile, done) {
+      User.findOne({ discordId: profile.id })
+        .then((existingUser) => {
+          if (existingUser) {
+            return done(null, existingUser);
+          } else {
+            const tempPassword = crypto.randomBytes(15).toString('hex');
+            const newUser = new User({
+              discordId: profile.id,
+              username: profile.username,
+              email: profile.email,
+              password: tempPassword,
+            });
+
+            newUser
+              .save()
+              .then((user) => {
+                // Send tempPassword to user via email.
+                return done(null, user);
+              })
+              .catch((err) => {
+                return done(
+                  new Error('Failed to save new user: ' + err.message)
+                );
+              });
+          }
         })
         .catch((err) => {
-            return done(new Error("User lookup failed: " + err.message));
+          return done(new Error('User lookup failed: ' + err.message));
         });
-}));
+    }
+  )
+);
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
   done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-      if(err){
-          done(new Error("Failed to deserialize an user: " + err.message));
-      }else{
-          done(null, user);
-      }
+passport.deserializeUser(function (id, done) {
+  User.findById(id, function (err, user) {
+    if (err) {
+      done(new Error('Failed to deserialize a user: ' + err.message));
+    } else {
+      done(null, user);
+    }
   });
 });
 
@@ -98,11 +150,13 @@ app.use((req, res, next) => {
   console.log('Authorization Header:', req.header('Authorization'));
   next();
 });
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -121,15 +175,31 @@ app.use('/api/games', gameRoutes);
 const orderRoutes = require('./routes/orderRoutes');
 app.use('/api/orders', orderRoutes);
 
+const messageRoutes = require('./routes/messageRoutes');
+app.use('/api/messages', messageRoutes);
+
+const affiliateController = require('./controllers/affiliateController'); // Import the affiliate controller
+
+const affiliateRoutes = require('./routes/affiliateRoutes');
+app.use('/api/affiliate', affiliateRoutes);
+
+// Generate affiliate link
+app.post(
+  '/api/affiliate/generate-link',
+  auth,
+  asyncHandler(affiliateController.generateAffiliateLink)
+);
+
 app.get('/auth/discord', passport.authenticate('discord'));
 
-app.get('/auth/discord/redirect',
-    passport.authenticate('discord', {
-        failureRedirect: '/login'
-    }),
-    function(req, res) {
-        res.redirect('/') // Or wherever you want the user to go
-    }
+app.get(
+  '/auth/discord/redirect',
+  passport.authenticate('discord', {
+    failureRedirect: '/login',
+  }),
+  function (req, res) {
+    res.redirect('/'); // Or wherever you want the user to go
+  }
 );
 
 app.get('/', (req, res) => {
