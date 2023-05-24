@@ -16,6 +16,7 @@ const { Server } = require('socket.io');
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 // Create the HTTP server
 const server = http.createServer(app);
 
@@ -177,6 +178,9 @@ app.use('/api/orders', orderRoutes);
 
 const messageRoutes = require('./routes/messageRoutes');
 app.use('/api/messages', messageRoutes);
+
+const taskRoutes = require('./routes/taskRoutes');
+app.use('/api/tasks', taskRoutes);
 
 const affiliateController = require('./controllers/affiliateController'); // Import the affiliate controller
 
