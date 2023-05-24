@@ -147,3 +147,20 @@ export function updateReview(reviewId, reviewData) {
 export function getReviewsByCoachId(coachId) {
   return axios.get(`/api/reviews/coach/${coachId}`);
 }
+
+//Task APIs
+export function createTask(taskData) {  // New function to create a task
+  return axios.post('/api/tasks', taskData);
+}
+export function updateTask(taskId, taskData) {  // New function to update a task
+  return axios.put(`/api/tasks/${taskId}`, taskData);
+}
+export function getTasksByCustomer(customerId) {  // New function to get tasks by customer ID
+  return axios.get(`/api/tasks/customer/${customerId}`);
+}
+export function getTaskById(taskId) {  // New function to get a task by its ID
+  return axios.get(`/api/tasks/${taskId}`);
+}
+export function deleteTask(taskId) {  // New function to delete a task by its ID
+  return axios.delete(`/api/tasks/${taskId}`);
+}
