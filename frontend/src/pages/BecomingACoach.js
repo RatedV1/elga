@@ -5,18 +5,7 @@ import horizontal_small_pattern_black from '../assets/horizontal_small_pattern_b
 import calendar_image_small from '../assets/calendar_image_small.png'
 import pricing_tickets from '../assets/pricing_tickets.png'
 import platform_mobile_view from '../assets/platform_mobile_view.png'
-import CoachApplicationForm from './CoachApplicationForm'; // Import the CoachApplicationForm component
-
 function BecomingACoach(props) {
-    const [isFormVisible, setIsFormVisible] = useState(false); // Add a state variable to control the visibility of the form
-
-    const handleApplyClick = () => {
-      setIsFormVisible(true); // Show the form when "Apply to become a coach" is clicked
-    };
-  
-    const closeForm = () => {
-      setIsFormVisible(false); // Hide the form
-    };
   return (
     <div className='side-paddings mt-8'>
           <div className='w-full rtl:bg-gradient-to-l ltr:bg-gradient-to-r from-bluegray-900 rounded-xl to-primary-800 relative '>
@@ -79,14 +68,13 @@ function BecomingACoach(props) {
                   </p>
                 </div>
               <div className='lg:w-auto w-full'>
-                  <button onClick={handleApplyClick} className="rounded-md bg-primary-500 hover:bg-primary-600 transition-colors mt-2 lg:mt-0 rtl:lg:mr-2 ltr:lg:ml-2 font-koverwatch text-3xl lg:text-xl py-4 lg:py-2 text-white w-full lg:px-12 xl:px-24">
+                  <button className="rounded-md bg-primary-500 hover:bg-primary-600 transition-colors mt-2 lg:mt-0 rtl:lg:mr-2 ltr:lg:ml-2 font-koverwatch text-3xl lg:text-xl py-4 lg:py-2 text-white w-full lg:px-12 xl:px-24">
                       Apply to become a COACH
                   </button>
-                  {isFormVisible && <CoachApplicationForm closeForm={closeForm} />}
               </div>
               </div>
     </div>
-  );
+  )
 }
 
 BecomingACoach.propTypes = {}

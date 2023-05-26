@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// Authentication middleware
 module.exports = async function (req, res, next) {
   const authHeader = req.header('Authorization');
 
@@ -31,13 +32,6 @@ module.exports = async function (req, res, next) {
     req.user = user; // Assign the user object to the request
 
     console.log('User object:', req.user);
-
-    // Check if user is an admin
-    // if (req.user.type !== 'Admin') {
-    //   console.log('User is not authorized');
-    //   return res.status(403).json({ msg: 'User is not authorized' });
-    // }
-
     console.log('Username:', req.user.username);
     console.log('User Type:', req.user.type);
 
@@ -47,3 +41,12 @@ module.exports = async function (req, res, next) {
     res.status(401).json({ msg: 'Token is not valid' });
   }
 };
+
+// isAdmin middleware
+module.exports.isAdmin = function(req, res, next) {
+    if (req.user.type !== 'Admin') {
+        console.log('User is not authorized');
+        return res.status(403).json({ msg: 'User is not authorized' });
+    }
+    next();
+}

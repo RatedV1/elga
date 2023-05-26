@@ -167,10 +167,35 @@ app.use('/api/users', userRoutes);
 const coachRoutes = require('./routes/coachRoutes');
 app.use('/api/coaches', coachRoutes);
 
+
+app.use((req, res, next) => {
+  console.log('Incoming request URL:', req.url);
+
+  if (req.url.startsWith('/@')) {
+    console.log('Routing to coachRoutes');
+    coachRoutes(req, res, next);
+  } else if (req.url === '/' || req.url.match(/^\/[a-zA-Z0-9-_]+$/)) {
+    console.log('Routing to gameRoutes');
+    gameRoutes(req, res, next);
+  } else {
+    console.log('Skipping middleware, continuing to next');
+    next();
+  }
+});
+
+
+
+
+
+// Add the following line for review routes
+const reviewRoutes = require('./routes/reviewRoutes');
+app.use('/api/reviews', reviewRoutes);
+
 const serviceRoutes = require('./routes/serviceRoutes');
 app.use('/api/coaches/:coachId/services', serviceRoutes);
 
 const gameRoutes = require('./routes/gameRoutes');
+app.use('/', gameRoutes);
 app.use('/api/games', gameRoutes);
 
 const orderRoutes = require('./routes/orderRoutes');
@@ -205,7 +230,6 @@ app.get(
     res.redirect('/'); // Or wherever you want the user to go
   }
 );
-
 app.get('/', (req, res) => {
   res.send('Hello, EGA!');
 });

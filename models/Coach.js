@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const CoachSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,7 +20,11 @@ const CoachSchema = new mongoose.Schema({
   },
   game: {
     type: String,
-    required: [true, 'Please provide a Game for the coach']
+    required: [true, 'Please provide a Game for the coach'],
+  },
+  gameName: {
+    type: String,
+    required: false,
   },
   profilePicture: {
     type: String,
@@ -65,15 +70,38 @@ const CoachSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide the coach level'],
   },
-  
   gameId: {
     type: String,
     required: false,
   },
   services: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Service'
+    ref: 'Service',
   }],
+  startingPrice: {
+    type: Number,
+    default: 0,
+  },
+});
+
+// Pre-save middleware to calculate the startingPrice based on the lowest service price
+CoachSchema.pre('save', async function (next) {
+  try {
+    if (this.services.length > 0) {
+      const lowestPrice = await this.model('Service')
+        .find({ _id: { $in: this.services } })
+        .sort({ price: 1 })
+        .limit(1)
+        .select('price');
+
+      this.startingPrice = lowestPrice.length > 0 ? lowestPrice[0].price : 0;
+    } else {
+      this.startingPrice = 0;
+    }
+    return next();
+  } catch (error) {
+    return next(error);
+  }
 });
 
 const Coach = mongoose.model('Coach', CoachSchema);

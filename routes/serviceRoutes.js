@@ -39,4 +39,8 @@ router.get('/:serviceId', auth, asyncHandler((req, res) => {
 // Delete a service for a coach
 router.delete('/:serviceId', auth, asyncHandler(serviceController.deleteService));
 
+// Get all services for a coach
+router.get('/', asyncHandler(serviceController.getServicesByCoach));
+
+
 module.exports = router;

@@ -1,16 +1,17 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import Select from 'react-select'
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import Select from 'react-select';
 import MultiRangeSlider, { ChangeResult } from "multi-range-slider-react";
-import colors from 'tailwindcss/colors'
-import { useState, useEffect } from 'react'
-import { useMediaQuery } from 'react-responsive'
-import {Link} from 'react-router-dom'
+import colors from 'tailwindcss/colors';
+import { useMediaQuery } from 'react-responsive';
+import { Link, useLocation } from 'react-router-dom';
+import { getGameByFriendlyUrl } from './api';
 
 function AdvancedSearch(props) {
-    const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
-    const isSmallMobile = useMediaQuery({ query: '(max-width: 500px)' })
-    const isTablet = useMediaQuery({ query: '(max-width: 1024px)' })
+    const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+    const isSmallMobile = useMediaQuery({ query: '(max-width: 500px)' });
+    const isTablet = useMediaQuery({ query: '(max-width: 1024px)' });
+    const [filtersData, setFiltersData] = useState(null);
     const select_styles = {
         control: (provided, state) => ({
             ...provided,
@@ -62,6 +63,46 @@ function AdvancedSearch(props) {
     const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false);
     const [priceMin, setPriceMin] = useState(0);
     const [priceMax, setPriceMax] = useState(100);
+    
+    const location = useLocation(); // Access the location object
+    const friendlyUrl = location.pathname.substring(1);
+
+    const fetchGameByFriendlyUrl = async (friendlyUrl) => {
+        try {
+            const response = await getGameByFriendlyUrl(friendlyUrl);
+            if (response && response.filters) {
+                setFiltersData(response.filters);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchGameByFriendlyUrl = async (friendlyUrl) => {
+            try {
+                const response = await getGameByFriendlyUrl(friendlyUrl);
+                console.log('Fetched filtersData:', response.filters); // log the fetched data
+                if (response && response.filters) {
+                    setFiltersData(response.filters);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+    
+        fetchGameByFriendlyUrl(friendlyUrl);
+    }, [location]);
+    
+    
+
+
+  
+      const filterName = filtersData?.filterName;
+      const filterOptions = filtersData?.filterOptions;
+      const filterType = filtersData?.filterType;
+      
+
     function handleOnPriceChange(e) {
         setPriceMin(e.minValue);
         setPriceMax(e.maxValue);
@@ -85,104 +126,54 @@ function AdvancedSearch(props) {
                     </label>
                 
                 
-              <label className={(!isAdvancedFilterOpen&&isTablet?"hidden":"block")+' w-full lg:w-auto'}>
-                        <p className='uppercase font-oskari font-medium text-white'>Server</p>
-                  <Select isClearable={true} isMulti={true} styles={select_styles} className='w-full lg:w-auto font-medium bg-darkgray-400 rounded-md mt-2' options={
-                            [
-                                  {
-                                      label: 'EUW',
-                                      value: 'EUW'
-                                  },
-                                  {
-                                      label: 'EUNE',
-                                      value: 'EUNE'
-                                  }
-                            ]
-                        }/>
-                    </label>
+
                 
                 
-              <label className={(!isAdvancedFilterOpen&&isTablet?"hidden":"block")+ ' w-full lg:w-auto'}>
-                        <p className='uppercase font-oskari font-medium text-white'>Role</p>
-                          <Select isClearable={true} isMulti={true} styles={select_styles} className=' font-medium bg-darkgray-400 rounded-md mt-2' options={
-                              [
-                                {
-                                    label: 'Top',
-                                    value: 'top'
-                                },
-                                {
-                                    label: 'Jungle',
-                                    value: 'jungle'
-                                },
-                                {
-                                    label: 'Mid',
-                                    value: 'mid'
-                                },
-                                
-                                {
-                                    label: 'ADC',
-                                    value: 'adc'
-                                },
-                                {
-                                    label: 'Support',
-                                    value: 'support'
-                                }
-                              ]
-                          } />
-                    </label>
-                
-                
-              <label className={(!isAdvancedFilterOpen&&isTablet?"hidden":"block")+ ' w-full lg:w-auto'}>
-                        <p className='uppercase font-oskari font-medium text-white'>Champion</p>
-                          <Select styles={select_styles} isMulti={true} className=' font-medium bg-darkgray-400 rounded-md mt-2' options={
-                              [
-                                {
-                                    label: 'Aatrox',
-                                    value: 'aatrox'
-                                },
-                                {
-                                    label: 'Ahri',
-                                    value: 'ahri'
-                                },
-                                {
-                                    label: 'Akali',
-                                    value: 'akali'
-                                },
-                                {
-                                    label: 'Alistar',
-                                    value: 'alistar'
-                                },
-                                {
-                                    label: 'Amumu',
-                                    value: 'amumu'
-                                },
-                                {
-                                    label: 'Anivia',
-                                    value: 'anivia'
-                                },
-                                {
-                                    label: 'Annie',
-                                    value: 'annie'
-                                },
-                              ]
-                          } />
-                    </label>
-              <label className={(!isAdvancedFilterOpen&&isTablet?"hidden":"block")+ ' w-full lg:w-auto'}>
-                          <p className='uppercase font-oskari font-medium text-white'>Language</p>
-                          <Select styles={select_styles} isMulti={true} className=' font-medium bg-darkgray-400 rounded-md mt-2' options={
-                              [
-                                {
-                                    label: 'English',
-                                    value: 'english'
-                                },
-                                {   
-                                    label: 'Arabic',
-                                    value: 'arabic'
-                                }
-                              ]
-                          } />
-                      </label>
-                
+                    {filtersData?.map(filter => {
+    if(filter.filterType === 'multiSelect') {
+        return (
+            <label key={filter._id} className={(!isAdvancedFilterOpen&&isTablet?"hidden":"block")+' w-full lg:w-auto'}>
+                <p className='uppercase font-oskari font-medium text-white'>{filter.filterName}</p>
+                <Select 
+                    isClearable={true} 
+                    isMulti={true} 
+                    styles={select_styles} 
+                    className='w-full lg:w-auto font-medium bg-darkgray-400 rounded-md mt-2' 
+                    options={filter.filterOptions.map(option => ({ label: option, value: option }))}/>
+            </label>
+        )
+    } else if (filter.filterType === 'dropdown') {
+        return (
+            <label key={filter._id} className={(!isAdvancedFilterOpen&&isTablet?"hidden":"block")+ ' w-full lg:w-auto'}>
+                <p className='uppercase font-oskari font-medium text-white'>{filter.filterName}</p>
+                <Select 
+                    isClearable={true} 
+                    isMulti={false} 
+                    styles={select_styles} 
+                    className=' font-medium bg-darkgray-400 rounded-md mt-2' 
+                    options={filter.filterOptions.map(option => ({ label: option, value: option }))} />
+            </label>
+        )
+    } else if (filter.filterType === 'select') {
+        return (
+            <div key={filter._id} className={(!isAdvancedFilterOpen&&isTablet?"hidden":"block")+ ' w-full lg:w-auto'}>
+                <p className='uppercase font-oskari font-medium text-white'>{filter.filterName}</p>
+                <div className="flex flex-wrap lg:justify-center gap-2">
+                    {filter.filterOptions.map((option, index) => (
+                        <label key={index}>
+                            <input type="checkbox" value={option} className='peer hidden' name={`${filter.filterName}[]`} />
+                            <div className='peer-checked:bg-primary-500 peer-checked:border-primary-500 transition-all cursor-pointer px-4 rounded-full bg-darkgray-400 py-2 text-white border-white border border-solid'>
+                                {option}
+                            </div>
+                        </label>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+})}
+
+      
                 </div>
           <div className=' flex justify-around ltr:text-left rtl:text-right lg:space-x-4 space-y-4 flex-wrap w-full lg:w-auto'>
               <div className={(!isAdvancedFilterOpen && isTablet ? "hidden" : "block") + ' ltr:lg:ml-4 rtl:lg:mr-4 mt-4'} style={{ width:isTablet?"100%":"270px" }}>
@@ -210,19 +201,6 @@ function AdvancedSearch(props) {
                                   setPriceMax(e.maxValue);
                               }}
                           />
-                    </div>
-              <div className={(!isAdvancedFilterOpen&&isTablet?"hidden":"block")+ ' w-full lg:w-auto'}>
-                          <p className='uppercase font-oskari font-medium text-white'>Rank</p>
-                          <div className="flex flex-wrap lg:justify-center gap-2">
-                            {ranks.reverse().map((rank, index) => (
-                                <label key={index}>
-                                    <input type="checkbox" value={rank} className='peer hidden' name="rank[]" />
-                                    <div className='peer-checked:bg-primary-500 peer-checked:border-primary-500 transition-all cursor-pointer px-4 rounded-full bg-darkgray-400 py-2 text-white border-white border border-solid'>
-                                        {rank}
-                                    </div>
-                                </label>
-                            ))}
-                          </div>
                     </div>
               <div className='flex-1 self-center ltr:lg:pl-4 rtl:lg:pr-4 w-full lg:w-auto'>
                         <Link to="/search">

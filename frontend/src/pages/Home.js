@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import project_yasuo_bg from '../assets/project-yasuo-bg.png'
 import ChooseGameSlider from '../components/ChooseGameSlider'
 import ChooseCoach from '../components/ChooseCoach'

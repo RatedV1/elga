@@ -4,12 +4,19 @@ const auth = require('../middlewares/auth'); // Import your authentication middl
 
 const router = express.Router();
 
-router.post('/', auth, reviewController.createReview); // Apply the middleware here
-router.get('/', reviewController.getReviews);
-router.get('/:id', reviewController.getReview);
-router.put('/:id', auth, reviewController.updateReview); // And here, if necessary
-
 // Get all reviews for a specific coach
 router.get('/coach/:coachId', reviewController.getReviewsByCoachId);
+
+// Get a specific review by ID
+router.get('/:id', reviewController.getReview);
+
+// Update a specific review by ID
+router.put('/:id', auth, reviewController.updateReview);
+
+// Get all reviews
+router.get('/', reviewController.getReviews);
+
+// Create a new review
+router.post('/', auth, reviewController.createReview); // Apply the middleware here
 
 module.exports = router;

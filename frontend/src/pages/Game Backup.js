@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // import useNavigate
+import { Link, useLocation } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Rating } from 'react-simple-star-rating';
@@ -27,15 +27,8 @@ function Game(props) {
   const [gameData, setGameData] = useState({});
   const [coachesData, setCoachesData] = useState([]); // Add state to store coaches data
   const location = useLocation();
-  const navigate = useNavigate(); // Initialize navigate
 
   const fetchGameAndCoachesByFriendlyUrl = async (friendlyUrl) => {
-    // Check if the url starts with @ then navigate to the coach page
-    if (friendlyUrl.startsWith('@')) {
-      navigate(`/@${friendlyUrl.substring(1)}`);
-      return;
-    }
-
     try {
       // Fetch game data
       const gameResponse = await getGameByFriendlyUrl(friendlyUrl);
@@ -81,8 +74,6 @@ function Game(props) {
     gameTitle,
     gameDescription,
   } = gameData;
-
-
   
   return (
     <div>
@@ -115,6 +106,7 @@ function Game(props) {
         <div className='side-paddings'>
             <AdvancedSearch/>
         </div>
+
         <div className='ltr:text-left rtl:text-right mt-8'>
               
               <SectionHeading title='Top picks for you' link="#" linkTitle="See all" />
@@ -126,9 +118,9 @@ function Game(props) {
                       className="mySwiper"
                   >
 
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
+                      {[1,2,3,4,5,6,7,8,9,10].map((item, index) => (
                         coachesData?.data?.map((coach, coachIndex) => (
-                          <SwiperSlide key={`${index}_${coachIndex}`} className={(index === 0 ? "ltr:ml-6 ltr:md:ml-8 ltr:xl:ml-12 ltr:2xl:ml-16 rtl:mr-6 rtl:md:mr-8 rtl:xl:mr-12 rtl:2xl:mr-16" : (index === 9 ? "ltr:mr-6 ltr:md:mr-8 ltr:xl:mr-12 ltr:2xl:mr-16 rtl:ml-6 rtl:md:ml-8 rtl:xl:ml-12 rtl:2xl:ml-16 " : "")) + ' text-white w-32 h-96'}>
+                          <SwiperSlide key={index} className={(index == 0 ? "ltr:ml-6 ltr:md:ml-8 ltr:xl:ml-12 ltr:2xl:ml-16 rtl:mr-6 rtl:md:mr-8 rtl:xl:mr-12 rtl:2xl:mr-16" : (index == 9 ? "ltr:mr-6 ltr:md:mr-8 ltr:xl:mr-12 ltr:2xl:mr-16 rtl:ml-6 rtl:md:ml-8 rtl:xl:ml-12 rtl:2xl:ml-16 " : ""))+' text-white w-32 h-96'}>
                               <Link to='/coach'><div className='w-48 h-96 text-white select-none'>
                                   <div className='w-full h-64 relative rounded-lg overflow-hidden'>
                                       <img src={coach_bg} className='absolute top-0 left-0 w-full h-full' alt="" />
@@ -152,7 +144,6 @@ function Game(props) {
         </div>
         <div className='mt-16'>
               <PatternBanner />
-              <PatternBanner gameData={gameData} />
         </div>
 
         <div className='mt-8 ltr:text-left rtl:text-right'>
@@ -187,6 +178,7 @@ function Game(props) {
       </div>
   )
 }
+
 Game.propTypes = {}
 
 export default Game

@@ -22,6 +22,8 @@ router.post(
   gameController.createGame
 );
 
+router.get('/:friendlyUrl', gameController.getGameByFriendlyUrl);
+
 // Get all games
 router.get('/', gameController.getAllGames);
 
@@ -46,5 +48,6 @@ router.put(
 
 // Delete a game
 router.delete('/:id', auth, validateGameId, gameController.deleteGame);
+
 
 module.exports = router;

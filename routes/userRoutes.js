@@ -16,10 +16,25 @@ router.post(
     body('password')
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters long'),
+      body('type').custom((value, { req }) => {
+        if (value === 'Admin' && !req.user) {
+          throw new Error('Authorization required to create an Admin user');
+        } else if (value === 'Admin' && req.user.type !== 'Admin') {
+          throw new Error('Only admins can create new admin accounts');
+        } else if (value === 'Coach' && !req.user) {
+          throw new Error('Authorization required to create a Coach user');
+        } else if ((value === 'Admin' || value === 'Coach') && req.user.type !== 'Admin') {
+          throw new Error('Only admins can create new admin or coach accounts');
+        } else if (!['Admin', 'Customer', 'Coach'].includes(value)) {
+          throw new Error('Invalid user type. User type can be Admin, Coach or Customer');
+        }
+        return true;
+      })
     // Add more validation rules as needed
   ],
   asyncHandler(userController.registerUser)
 );
+
 
 // Login a user
 router.post(
@@ -30,6 +45,7 @@ router.post(
   ],
   asyncHandler(userController.loginUser)
 );
+
 // Redirect the user to the Discord authentication page
 router.get('/auth/discord', passport.authenticate('discord'));
 
@@ -40,6 +56,7 @@ router.get('/auth/discord/callback',
         res.redirect('/');  // or wherever you want
     }
 );
+
 // Get user profile
 router.get('/profile', auth, asyncHandler(userController.getUserProfile));
 

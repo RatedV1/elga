@@ -12,7 +12,7 @@ const GameFilterSchema = new mongoose.Schema({
   },
   filterType: {
     type: String,
-    enum: ['multiSelect', 'dropdown', 'rangeSlider'],
+    enum: ['multiSelect', 'dropdown', 'rangeSlider', 'select'],
     required: [true, 'Please provide type for the filter'],
   },
 });
@@ -48,6 +48,7 @@ const GameSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  filters: [GameFilterSchema],
   gameCover: {
     type: String,
     required: [true, 'Please provide a game cover image URL'],
