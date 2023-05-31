@@ -104,6 +104,38 @@ function Coach(props) {
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl.",
       }
     },
+    {
+      id: 1,
+      rating: 4,
+      username: "Kai",
+      userimage: "https://thispersondoesnotexist.com/image",
+      usertype: "Golden User",
+      dateTime: "2022-10-23T12:00:00Z",
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl.",
+      reply: {
+        id: 1,
+        username: "JossStick",
+        userimage: "/images/illustrations/coach_image.png",
+        dateTime: "2022-10-24T12:00:00Z",
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl.",
+      }
+    },
+    {
+      id: 1,
+      rating: 4,
+      username: "Kai",
+      userimage: "https://thispersondoesnotexist.com/image",
+      usertype: "Golden User",
+      dateTime: "2022-10-23T12:00:00Z",
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl.",
+      reply: {
+        id: 1,
+        username: "JossStick",
+        userimage: "/images/illustrations/coach_image.png",
+        dateTime: "2022-10-24T12:00:00Z",
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl. Sed euismod, nisl vitae ultricies lacinia, nunc nisl ultricies nunc, nec ultricies nisl nunc vel nisl.",
+      }
+    },
   ];
 
   return (
@@ -246,20 +278,9 @@ function Coach(props) {
             </div>
             <div className='flex-1 2xl:max-w-lg '>
               <div className='bg-bluegray-900 rounded-xl'>
-                <h1 className='py-2 px-4 text-2xl font-medium text-white'>Tags</h1>
-                <hr className='border-gray-600 mb-2' />
-                <div className='flex flex-wrap px-4'>
-                  {["League of Legends", "Ahri", "Ahri LOL", "LOL", "TFT", "Teamfight Tactics"].map((item, index) => (
-                    <ProfileTag key={index}>
-                      {item}
-                    </ProfileTag>
-                  ))}
-                </div>
-              </div>
-              <div className='bg-bluegray-900 rounded-xl mt-4'>
                 <h1 className='py-2 px-4 text-2xl font-medium'>User Reviews</h1>
                 <hr className='border-gray-600 mb-2' />
-                <div style={{ maxHeight: "700px" }} className=' no-scrollbar overflow-auto'>
+                <div style={{ maxHeight: "800px" }} className=' no-scrollbar overflow-auto'>
                   <div className='px-2 lg:px-4 py-2'>
                     {reviews.map((item, index) => (
                       <UserReview className="mb-4" key={index} review={item} />

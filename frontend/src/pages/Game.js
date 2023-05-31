@@ -8,6 +8,9 @@ import { Rating } from 'react-simple-star-rating';
 import SectionHeading from '../components/General/SectionHeading';
 import RoleCoaches from '../components/RoleCoaches';
 import ChampionCoaches from '../components/ChampionCoaches';
+import ChooseCoach from '../components/ChooseCoach'
+import Banner from '../components/Banner'
+import banner_bg from '../assets/banner_bg.png'
 import AdvancedSearch from '../components/General/AdvancedSearch';
 import HowItWorks from '../components/HowItWorks';
 import PatternBanner from '../components/General/PatternBanner';
@@ -155,35 +158,15 @@ function Game(props) {
               <PatternBanner gameData={gameData} />
         </div>
 
-        <div className='mt-8 ltr:text-left rtl:text-right'>
-              <SectionHeading title='Coaches by roles' />
-              <div className='grid  side-paddings grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 lg:gap-4 mt-4 items-center flex-wrap'>
-                <RoleCoaches title={'Top'} coachesNumber={6} icon={top_icon} />
-                <RoleCoaches title={'Jungle'} coachesNumber={5} icon={jungle_icon} />
-                <RoleCoaches title={'Mid'} coachesNumber={3} icon={mid_icon} />
-                <RoleCoaches title={'Bot'} coachesNumber={12} icon={adc_icon} />
-                <RoleCoaches title={'Support'} coachesNumber={6} icon={support_icon} />
-            </div>
-        </div>
+        <div className='mt-8'>
+                  <ChooseCoach showtitle={true} showmore={true}/>
+                </div>
         <div className=' ltr:text-left rtl:text-right mt-4'>
               <HowItWorks />
         </div>
-        <div className=' ltr:text-left rtl:text-right mt-8'>
-            <SectionHeading title='Coaches by champions' link="#" linkTitle="See all" >
-                  <div className='flex items-center xl:w-auto w-full mt-4 xl:mt-0'>
-                      <button className='text-darkgray-600 border border-solid border-white bg-white py-1 rounded-md font-oskari text-xl xl:text-lg px-4 sm:px-7 ltr:xl:ml-5 rtl:xl:mr-5'>Alphabetical</button>
-                      <button className='text-white border border-solid border-white py-1 rounded-md font-oskari text-xl xl:text-lg px-4 sm:px-7 ltr:ml-2 ltr:sm:ml-5 rtl:mr-2 rtl:sm:mr-5'>Most popular</button>
-                  </div>
-            </SectionHeading>
-              <div className='grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 lg:gap-4 mt-4 items-center flex-wrap side-paddings'>
-                  {
-                  champion_coaches.slice(0,12).map((coach, index) => (
-                      <ChampionCoaches key={index} title={coach.name} coachesNumber={coach.coachesCount} image={coach.image} />
-                    ))
-                    }
-
-            </div>
-        </div>
+        <div className='mt-8 side-paddings-except-mobile'>
+                      <Banner title={('Thousands of users are using \n EL GAMING ACADEMY Everyday!')} bg={banner_bg} button={{title: ("Learn how it works"), href: "#"}} />
+                </div>
       </div>
   )
 }
